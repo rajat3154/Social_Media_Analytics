@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_BASE = "http://localhost:8000";
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
   const [activeTab, setActiveTab] = useState("analytics");
@@ -56,7 +56,7 @@ function App() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/users/`);
+      const res = await axios.get(`${API_URL}/users/`);
       setUsers(res.data);
     } catch (err) {
       setMessage("Error fetching users");
@@ -68,7 +68,7 @@ function App() {
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/posts/`);
+      const res = await axios.get(`${API_URL}/posts/`);
       setPosts(res.data);
     } catch (err) {
       setMessage("Error fetching posts");
@@ -81,9 +81,9 @@ function App() {
     setLoading(true);
     try {
       const [topRes, summaryRes, statsRes] = await Promise.all([
-        axios.get(`${API_BASE}/analytics/top-posts`),
-        axios.get(`${API_BASE}/analytics/user-summary`),
-        axios.get(`${API_BASE}/analytics/engagement-stats`),
+        axios.get(`${API_URL}/analytics/top-posts`),
+        axios.get(`${API_URL}/analytics/user-summary`),
+        axios.get(`${API_URL}/analytics/engagement-stats`),
       ]);
       setTopPosts(topRes.data);
       setUserSummary(summaryRes.data);
@@ -97,7 +97,7 @@ function App() {
 
   const fetchUnionActivities = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/analytics/union-activities`);
+      const res = await axios.get(`${API_URL}/analytics/union-activities`);
       setUnionActivities(res.data);
     } catch (err) {
       setMessage("Error fetching activities");
@@ -106,7 +106,7 @@ function App() {
 
   const fetchGroupedData = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/analytics/group-by-engagement`);
+      const res = await axios.get(`${API_URL}/analytics/group-by-engagement`);
       setGroupedData(res.data);
     } catch (err) {
       setMessage("Error fetching grouped data");
@@ -120,7 +120,7 @@ function App() {
     }
     setLoading(true);
     try {
-      await axios.post(`${API_BASE}/users/`, newUser);
+      await axios.post(`${API_URL}/users/`, newUser);
       setMessage("User created successfully!");
       setNewUser({ username: "", email: "", full_name: "" });
       fetchUsers();
@@ -138,7 +138,7 @@ function App() {
     }
     setLoading(true);
     try {
-      await axios.post(`${API_BASE}/posts/`, newPost);
+      await axios.post(`${API_URL}/posts/`, newPost);
       setMessage("Post created successfully!");
       setNewPost({ user_id: "", content: "" });
       fetchPosts();
@@ -156,7 +156,7 @@ function App() {
       return;
     }
     try {
-      await axios.post(`${API_BASE}/likes/`, newLike);
+      await axios.post(`${API_URL}/likes/`, newLike);
       setMessage("Like added successfully!");
       setNewLike({ post_id: "", user_id: "" });
       fetchAnalytics();
@@ -171,7 +171,7 @@ function App() {
       return;
     }
     try {
-      await axios.post(`${API_BASE}/comments/`, newComment);
+      await axios.post(`${API_URL}/comments/`, newComment);
       setMessage("Comment added successfully!");
       setNewComment({ post_id: "", user_id: "", content: "" });
       fetchAnalytics();
@@ -187,7 +187,7 @@ function App() {
     }
     try {
       const res = await axios.get(
-        `${API_BASE}/analytics/search-posts?query=${searchQuery}`
+        `${API_URL}/analytics/search-posts?query=${searchQuery}`
       );
       setSearchResults(res.data);
       setMessage(`Found ${res.data.length} posts`);
@@ -198,7 +198,7 @@ function App() {
 
   const refreshMaterialized = async () => {
     try {
-      await axios.post(`${API_BASE}/analytics/refresh-materialized`);
+      await axios.post(`${API_URL}/analytics/refresh-materialized`);
       setMessage("Views refreshed successfully!");
       fetchAnalytics();
     } catch (err) {
@@ -208,7 +208,7 @@ function App() {
 
   const exportReport = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/analytics/export-report`, {
+      const response = await axios.get(`${API_URL}/analytics/export-report`, {
         responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -227,7 +227,7 @@ function App() {
   const deleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        await axios.delete(`${API_BASE}/users/${userId}`);
+        await axios.delete(`${API_URL}/users/${userId}`);
         setMessage("User deleted successfully!");
         fetchUsers();
       } catch (err) {
